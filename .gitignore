@@ -196,4 +196,7 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+# Composer
+/vendor/
+
 # End of https://www.toptal.com/developers/gitignore/api/macos,java,maven,intellij,appengine
