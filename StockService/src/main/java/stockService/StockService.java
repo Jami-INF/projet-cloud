@@ -1,10 +1,14 @@
 package stockService;
 
+import book.Book;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 import javax.ws.rs.GET;
@@ -12,6 +16,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("stockservice")
@@ -32,20 +37,31 @@ public class StockService {
         }
         try {
             Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM stock WHERE isbn = '" + isbn + "'");
-            String out = "Hello!\n";
-            while (rs.next()) {
-                out += "Read from DB: " + rs.getString("isbn") + " " + rs.getString("stock") + " " + rs.getString("name") + "\n";
+            ResultSet rs = stmt.executeQuery("SELECT * FROM stock WHERE isbn = '" + isbn + "' LIMIT 1");
+            if (rs.next()) {
+                Book book = new Book(rs.getString("isbn"), rs.getString("name"), rs.getString("stock"));
+                Gson gson = new GsonBuilder().create();
+                String json = gson.toJson(book);
+                return Response.status(200).entity(json).build();
+            }else {
+                return Response.status(200).entity("No book found").build();
             }
-            return Response.status(200).entity(out).build();
         } catch (Exception e) {
             return Response.status(500).entity("Impossible to execute the query " + e.getMessage()).build();
+        }finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    return Response.status(500).entity("Impossible to close the connection " + e.getMessage()).build();
+                }
+            }
         }
     }
 
     @GET
     @Path("stockall")
-    @Produces("text/plain")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getStockAllRequest() {
         if (connection == null) {
             try {
@@ -57,13 +73,24 @@ public class StockService {
         try {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM stock");
-            String out = "Hello!\n";
+            List<Book> books = new ArrayList<>();
             while (rs.next()) {
-                out += "Read from DB: " + rs.getString("isbn") + " " + rs.getString("stock") + "\n";
+                Book book = new Book(rs.getString("isbn"), rs.getString("name"), rs.getString("stock"));
+                books.add(book);
             }
-            return Response.status(200).entity(out).build();
+            Gson gson = new GsonBuilder().create();
+            String json = gson.toJson(books);
+            return Response.status(200).entity(json).build();
         } catch (Exception e) {
             return Response.status(500).entity("Impossible to execute the query " + e.getMessage()).build();
+        }finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    return Response.status(500).entity("Impossible to close the connection " + e.getMessage()).build();
+                }
+            }
         }
     }
 
@@ -92,6 +119,14 @@ public class StockService {
             return Response.status(200).entity("Stock updated").build();
         } catch (Exception e) {
             return Response.status(500).entity("Impossible to execute the query " + e.getMessage()).build();
+        }finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    return Response.status(500).entity("Impossible to close the connection " + e.getMessage()).build();
+                }
+            }
         }
     }
 
@@ -117,6 +152,14 @@ public class StockService {
             return Response.status(200).entity("Stock updated").build();
         } catch (Exception e) {
             return Response.status(500).entity("Impossible to execute the query " + e.getMessage()).build();
+        }finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    return Response.status(500).entity("Impossible to close the connection " + e.getMessage()).build();
+                }
+            }
         }
     }
 
