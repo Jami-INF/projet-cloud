@@ -96,6 +96,7 @@ public class StockService {
 
     @POST
     @Path("decrease")
+    @Produces("text/plain")
     public Response decreaseStockRequest(@QueryParam("isbn") String isbn, @QueryParam("quantity") int quantityToDecrease)
     {
         if (connection == null) {
@@ -132,6 +133,7 @@ public class StockService {
 
     @POST
     @Path("increase")
+    @Produces("text/plain")
     public Response increaseStockRequest(@QueryParam("isbn") String isbn)
     {
         if (connection == null) {
@@ -166,7 +168,7 @@ public class StockService {
     }
 
 
-    @GET
+    @POST
     @Path("initdb")
     @Produces("text/plain")
     public Response initDbRequest() {
@@ -180,9 +182,17 @@ public class StockService {
         try {
             Statement stmt = connection.createStatement();
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS stock (isbn varchar(255), name varchar(255), stock varchar(255))");
-            stmt.executeUpdate("INSERT INTO stock VALUES ('1234567890', 'harrypotter', '1')");
-            stmt.executeUpdate("INSERT INTO stock VALUES ('1234567891', 'harrypeaudbeurre', '2')");
-            stmt.executeUpdate("INSERT INTO stock VALUES ('1234567892', 'harrypotter2', '3')");
+            stmt.executeUpdate("DELETE FROM stock");
+            stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-306-40615-7', 'The Catcher in the Rye', '1')");
+            stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-27778-7', 'The Great Gatsby', '2')");
+            stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-40939-1', 'The Grapes of Wrath', '12')");
+            stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-54886-7', 'Nineteen Eighty-Four', '44')");
+            stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70047-7', 'Lolita', '4')");
+            stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70066-8', 'Catch-22', '90')");
+            stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70069-9', 'Lord of the Flies', '2')");
+            stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70074-3', 'On the Road', '1')");
+            stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70075-0', 'Heart of Darkness', '0')");
+            stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70081-1', 'Slaughterhouse-Five', '0')");
             return Response.status(200).entity("Database initialized").build();
         } catch (Exception e) {
             return Response.status(500).entity("Impossible to execute the query " + e.getMessage()).build();

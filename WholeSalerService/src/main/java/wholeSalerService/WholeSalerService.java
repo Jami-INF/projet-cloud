@@ -19,7 +19,7 @@ public class WholeSalerService {
         try {
             Client client = ClientBuilder.newClient();
             WebTarget target = client.target("https://stock-service.herokuapp.com").path("stockservice/increase/").queryParam("isbn", isbn);
-            response = target.request().get();
+            response = target.request().post(null);
         } catch (Exception e) {
             return Response.status(500).entity("Impossible to execute the query " + e.getMessage()).build();
         }
