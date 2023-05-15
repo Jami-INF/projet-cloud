@@ -193,10 +193,45 @@ public class StockService {
             stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70074-3', 'On the Road', '1')");
             stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70075-0', 'Heart of Darkness', '0')");
             stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70081-1', 'Slaughterhouse-Five', '0')");
+
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS customer (username varchar(255), token varchar(255))");
+            stmt.executeUpdate("DELETE FROM customer");
+            stmt.executeUpdate("INSERT INTO customer VALUES ('admin', '136489304656392047930278404540')");
+            stmt.executeUpdate("INSERT INTO customer VALUES ('user1', '648928653764839044899283908398')");
+            stmt.executeUpdate("INSERT INTO customer VALUES ('user2', '890988723784230984903287542323')");
+
             return Response.status(200).entity("Database initialized").build();
         } catch (Exception e) {
             return Response.status(500).entity("Impossible to execute the query " + e.getMessage()).build();
         }
+    }
+
+    @POST
+    @Path("adduser")
+    @Produces("text/plain")
+    public Response addUserRequest(@QueryParam("username") String username) {
+        if (connection == null) {
+            try {
+                connection = getConnection();
+            } catch (Exception e) {
+                return Response.status(500).entity("Impossible to be connected to the database " + e.getMessage()).build();
+            }
+        }
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate("INSERT INTO customer VALUES ('" + username + "', '" + generateToken() + "')");
+            return Response.status(200).entity("User added").build();
+        } catch (Exception e) {
+            return Response.status(500).entity("Impossible to execute the query " + e.getMessage()).build();
+        }
+    }
+
+    private String generateToken() {
+        StringBuilder token = new StringBuilder();
+        for (int i = 0; i < 30; i++) {
+            token.append((int) (Math.random() * 10));
+        }
+        return token.toString();
     }
 
     private Connection getConnection() throws Exception {
