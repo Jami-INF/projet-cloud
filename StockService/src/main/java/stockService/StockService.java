@@ -132,7 +132,7 @@ public class StockService {
 
     @POST
     @Path("increase")
-    public Response increaseStockRequest(@QueryParam("isbn") String isbn, @QueryParam("quantity") int quantityToIncrease)
+    public Response increaseStockRequest(@QueryParam("isbn") String isbn)
     {
         if (connection == null) {
             try {
@@ -143,12 +143,14 @@ public class StockService {
         }
         try {
             Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM stock WHERE isbn = '" + isbn + "'");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM stock WHERE isbn = '" + isbn + "' LIMIT 1");
             int quantity = 0;
-            while (rs.next()) {
+            if (rs.next()) {
                 quantity = Integer.parseInt(rs.getString("stock"));
+            }else {
+                return Response.status(500).entity("No book found").build();
             }
-            stmt.executeUpdate("UPDATE stock SET stock = '" + (quantity + quantityToIncrease) + "' WHERE isbn = '" + isbn + "'");
+            stmt.executeUpdate("UPDATE stock SET stock = '" + (quantity + 5) + "' WHERE isbn = '" + isbn + "'");
             return Response.status(200).entity("Stock updated").build();
         } catch (Exception e) {
             return Response.status(500).entity("Impossible to execute the query " + e.getMessage()).build();

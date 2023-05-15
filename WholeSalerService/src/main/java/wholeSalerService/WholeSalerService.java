@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response;
 @Path("wholesalerservice")
 public class WholeSalerService {
 
-    @GET
+    @POST
     @Path("order")
     @Produces("text/plain")
     public Response order(@QueryParam("isbn") String isbn){
