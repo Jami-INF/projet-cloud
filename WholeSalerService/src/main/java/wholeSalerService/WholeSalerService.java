@@ -10,16 +10,16 @@ import javax.ws.rs.core.Response;
 @Path("wholesalerservice")
 public class WholeSalerService {
 
-    @GET
+    @POST
     @Path("order")
     @Produces("text/plain")
-    public Response order(@QueryParam("isbn") String isbn){
+    public Response order(@HeaderParam("Authorization") String auth, @QueryParam("isbn") String isbn){
         Response response = null;
 
         try {
             Client client = ClientBuilder.newClient();
             WebTarget target = client.target("https://stock-service.herokuapp.com").path("stockservice/increase/").queryParam("isbn", isbn);
-            response = target.request().get();
+            response = target.request().header("Authorization", auth).post(null);
         } catch (Exception e) {
             return Response.status(500).entity("Impossible to execute the query " + e.getMessage()).build();
         }
