@@ -19,7 +19,13 @@ import javax.ws.rs.core.Response;
 public class StockService {
 
     private Connection connection;
-                                                                        
+
+    /**
+     * Permet de récupérer le stock d'un livre en fonction de son isbn
+     * @param isbn isbn du livre
+     * @param auth token de l'utilisateur
+     * @return Response contenant le stock du livre
+     */
     @GET
     @Path("stock")
     @Produces("text/plain")
@@ -59,6 +65,11 @@ public class StockService {
         }
     }
 
+    /**
+     * Permet de récupérer le stock de tous les livres
+     * @param auth token de l'utilisateur
+     * @return Response contenant le stock de tous les livres
+     */
     @GET
     @Path("stockall")
     @Produces(MediaType.APPLICATION_JSON)
@@ -101,6 +112,12 @@ public class StockService {
         }
     }
 
+    /**
+     * Permet de réduire le stock d'un livre en fonction de son isbn
+     * @param auth token de l'utilisateur
+     * @param isbn isbn du livre
+     * @param quantity quantité à réduire
+     */
     @POST
     @Path("decrease")
     @Produces("text/plain")
@@ -142,6 +159,13 @@ public class StockService {
         }
     }
 
+
+    /**
+     * Permet d'augmenter le stock d'un livre en fonction de son isbn
+     * @param auth token de l'utilisateur
+     * @param isbn isbn du livre
+     * @param quantity quantité à augmenter
+     */
     @POST
     @Path("increase")
     @Produces("text/plain")
@@ -182,7 +206,11 @@ public class StockService {
         }
     }
 
-
+    /**
+     * Permet d'initialiser la base de données
+     * @param auth token de l'utilisateur
+     * @return Response
+     */
     @POST
     @Path("initdb")
     @Produces("text/plain")
@@ -202,15 +230,14 @@ public class StockService {
                 stmt.executeUpdate("CREATE TABLE IF NOT EXISTS stock (isbn varchar(255), name varchar(255), stock varchar(255))");
                 stmt.executeUpdate("DELETE FROM stock");
                 stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-306-40615-7', 'The Catcher in the Rye', '1')");
-                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-27778-7', 'The Great Gatsby', '2')");
-                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-40939-1', 'The Grapes of Wrath', '12')");
-                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-54886-7', 'Nineteen Eighty-Four', '44')");
-                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70047-7', 'Lolita', '4')");
-                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70066-8', 'Catch-22', '90')");
-                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70069-9', 'Lord of the Flies', '2')");
-                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70074-3', 'On the Road', '1')");
-                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70075-0', 'Heart of Darkness', '0')");
-                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-307-70081-1', 'Slaughterhouse-Five', '0')");
+                stmt.executeUpdate("INSERT INTO stock VALUES ('978-600-119-125-1', 'The Great Gatsby', '2')");
+                stmt.executeUpdate("INSERT INTO stock VALUES ('978-601-7151-13-3', 'The Grapes of Wrath', '12')");
+                stmt.executeUpdate("INSERT INTO stock VALUES ('978-1-2345-6789-7', 'Nineteen Eighty-Four', '44')");
+                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-439-02349-8', 'Lolita', '4')");
+                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-440-32033-5', 'Catch-22', '90')");
+                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-375-70114-8', 'Lord of the Flies', '2')");
+                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-671-02735-3', 'On the Road', '1')");
+                stmt.executeUpdate("INSERT INTO stock VALUES ('978-0-06-112008-4', 'Heart of Darkness', '0')");
 
                 stmt.executeUpdate("CREATE TABLE IF NOT EXISTS customer (username varchar(255), token varchar(255))");
                 stmt.executeUpdate("DELETE FROM customer");
@@ -225,30 +252,38 @@ public class StockService {
         }
     }
 
+    /**
+     * Permet d'ajouter un utilisateur
+     * @param username nom de l'utilisateur
+     * @return Response contenant le token de l'utilisateur
+     */
     @POST
     @Path("adduser")
     @Produces("text/plain")
-    public Response addUserRequest(@HeaderParam("Authorization") String auth, @QueryParam("username") String username) {
-        if (!validateUser(auth)) {
-            return Response.status(401).entity("Unauthorized").build();
-        } else {
-            if (connection == null) {
-                try {
-                    connection = getConnection();
-                } catch (Exception e) {
-                    return Response.status(500).entity("Impossible to be connected to the database " + e.getMessage()).build();
-                }
-            }
+    public Response addUserRequest(@QueryParam("username") String username) {
+        if (connection == null) {
             try {
-                Statement stmt = connection.createStatement();
-                stmt.executeUpdate("INSERT INTO customer VALUES ('" + username + "', '" + generateToken() + "')");
-                return Response.status(200).entity("User added").build();
+                connection = getConnection();
             } catch (Exception e) {
-                return Response.status(500).entity("Impossible to execute the query " + e.getMessage()).build();
+                return Response.status(500).entity("Impossible to be connected to the database " + e.getMessage()).build();
             }
         }
+        try {
+            Statement stmt = connection.createStatement();
+            String token = generateToken();
+            stmt.executeUpdate("INSERT INTO customer VALUES ('" + username + "', '" + token + "')");
+            return Response.status(200).entity(token).build();
+        } catch (Exception e) {
+            return Response.status(500).entity("Impossible to execute the query " + e.getMessage()).build();
+        }
+
     }
 
+    /**
+     * Permet de valider un utilisateur
+     * @param token token de l'utilisateur
+     * @return boolean true si l'utilisateur est valide, false sinon
+     */
     private boolean validateUser(String token) {
         if (connection == null) {
             try {
@@ -270,6 +305,10 @@ public class StockService {
         }
     }
 
+    /**
+     * Permet de générer un token
+     * @return String token
+     */
     private String generateToken() {
         StringBuilder token = new StringBuilder();
         for (int i = 0; i < 30; i++) {
@@ -278,6 +317,10 @@ public class StockService {
         return token.toString();
     }
 
+    /**
+     * Permet de se connecter à la base de données
+     * @return Connection
+     */
     private Connection getConnection() throws Exception {
         // Class.forName("org.postgresql.Driver");
         URI dbUri = new URI(System.getenv("DATABASE_URL"));

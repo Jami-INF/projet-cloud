@@ -10,6 +10,12 @@ import javax.ws.rs.core.Response;
 @Path("wholesalerservice")
 public class WholeSalerService {
 
+    /**
+     * Permet de commander des livres a partir de l'ISBN
+     * @param auth : token d'authentification
+     * @param isbn : isbn du livre a commander
+     * @return : reponse de la requete
+     */
     @POST
     @Path("order")
     @Produces("text/plain")

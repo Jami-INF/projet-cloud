@@ -23,7 +23,7 @@ public class ShoppingService {
     }
 
     /**
-     * Permet de connaître la quantité d'un livre en stock
+     * Permet de récupérer la quantité d'un livre en stock grace a son isbn
      * @param isbn Identifie le livre et doit être valide au format ISBN-13
      * @param auth Token d'authentification
      * @return Une réponse http
@@ -62,7 +62,7 @@ public class ShoppingService {
     }
 
     /**
-     * Permet d'acheter un livre en le désignant par son isbn et en indiquant la quantité à acheter
+     * Permet d'acheter un livre en "X" quantité grace a son isbn
      * @param isbn Identifie le livre et doit être valide au format ISBN-13
      * @param quantity Quantité du livre à acheter
      * @param auth Token d'authentification
@@ -194,7 +194,7 @@ public class ShoppingService {
     }
 
     /**
-     * Permet d'envoyer une requête au stockservice pour obtenir la quantité d'un livre en stock
+     * Permet d'envoyer une requête au stockservice pour obtenir la quantité d'un livre en stock grace a son isbn
      * @param isbn Isbn du livre
      * @param auth Token d'authentification
      * @return La réponse http de la requête
@@ -216,7 +216,7 @@ public class ShoppingService {
     }
 
     /**
-     * Permet d'envoyer une requête au stockservice pour acheter un livre en "X" quantité
+     * Permet d'envoyer une requête au stockservice pour acheter un livre en "X" quantité grace a son isbn
      * @param isbn Isbn du livre
      * @param quantity Quantité du livre à acheter
      * @return La réponse http de la requête
@@ -237,7 +237,7 @@ public class ShoppingService {
     }
 
     /**
-     * Permet d'envoyer une requête au wholesalerservice pour commander des livres afin d'alimenter le stock
+     * Permet d'envoyer une requête au wholesalerservice pour commander des livres afin d'alimenter le stock grace a son isbn
      * @param isbn Isbn du livre
      * @return La réponse http de la requête
      */

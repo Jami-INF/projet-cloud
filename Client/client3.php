@@ -22,7 +22,7 @@ for($i = 0; $i < 5; $i++){
     
     $correlationId = $result;
     
-    // Affiche le stock du livre qui possède l'isbn 978-0-306-40615-7
+    // Affiche le stock du livre qui possède l'isbn $isbn
     $book = $client->get($url_shopping . 'book?isbn=' . $isbn, [
         'headers' => [
             'Authorization' => $correlationId
@@ -32,7 +32,7 @@ for($i = 0; $i < 5; $i++){
     $result = $book->getBody()->getContents();
     echo $result . "\n\n";
     
-    // Achete le livre qui possède l'isbn 978-0-306-40615-7
+    // Achete le livre qui possède l'isbn $isbn
     $buy = $client->post($url_shopping . 'buy?isbn=' . $isbn . '&quantity=37', [
         'headers' => [
             'Authorization' => $correlationId
@@ -42,7 +42,7 @@ for($i = 0; $i < 5; $i++){
     $result = $buy->getBody()->getContents();
     echo $result . "\n\n";
     
-    // Affiche le stock du livre qui possède l'isbn 978-0-306-40615-7
+    // Affiche le stock du livre qui possède l'isbn $isbn
     $book = $client->get($url_shopping . 'book?isbn=' . $isbn, [
         'headers' => [
             'Authorization' => $correlationId
@@ -54,22 +54,3 @@ for($i = 0; $i < 5; $i++){
 
     sleep(1);
 }
-
-
-
-
-/**
- *  GetStock
- *  GetStockAll
- *  (Increase/Decrease)
- *  addUser
- *  initDb
- * 
- *  Order (Commande 5 livres)
- * 
- *  book ( Affiche le stock d'un livre)
- *  buy (Achete un ou plusieurs livre si disponible sinon --> commande 5 livres)
- * 
- * 
- * 
- */
