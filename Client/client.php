@@ -10,7 +10,7 @@ $url_stock = "https://stock-service.herokuapp.com/stockservice/";
 $url_shopping = "https://shoppingservice-385621.oa.r.appspot.com/shoppingservice/";
 
 
-for($i = 0; $i < 10; $i++){
+for($i = 0; $i < 5; $i++){
     $client = new Client();
 
     // Ajouter un user
@@ -40,6 +40,8 @@ for($i = 0; $i < 10; $i++){
 
     $result = $buy->getBody()->getContents();
     echo $result . "\n\n";
+
+    sleep(1);
 }
 
 

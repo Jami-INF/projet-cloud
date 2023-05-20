@@ -4,13 +4,13 @@ require 'vendor/autoload.php';
 
 use GuzzleHttp\Client;
 
-$isbn = "978-0-375-70114-8";
+$isbn = "978-601-7151-13-3";
     
 $url_stock = "https://stock-service.herokuapp.com/stockservice/";
 $url_shopping = "https://shoppingservice-385621.oa.r.appspot.com/shoppingservice/";
 
 
-for($i = 0; $i < 10; $i++){
+for($i = 0; $i < 5; $i++){
 
     $client = new Client();
       
@@ -51,6 +51,8 @@ for($i = 0; $i < 10; $i++){
     
     $result = $book->getBody()->getContents();
     echo $result . "\n\n";
+
+    sleep(1);
 }
 
 
